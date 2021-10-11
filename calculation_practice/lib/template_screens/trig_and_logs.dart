@@ -45,7 +45,7 @@ class _TrigLogPageState extends State<TrigLogPage> {
           preview2: Text('log\u2099(a)'),
           attribute1: Text('n\u1d57\u02b0 power'),
           attribute2: Text('base n'),
-          values: Preferences(),
+          values: Preferences('sin'),
       ),
     );
   }

@@ -1,7 +1,92 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
+/*
+  void _randomizeRangeOfN() {
+    setState(() {
+      // Ensure there are at least two terms
+      _minN = Random.secure().nextInt(_MAX_N - _MIN_N) + _MIN_N;
+      _maxN = Random.secure().nextInt(_MAX_N + 1);
+      // Ensure _maxN > _minN
+      if(_minN > _maxN){
+        int range = _MAX_N - _minN;
+        _maxN = _minN;
+        _maxN += Random.secure().nextInt(range) + 1;
+      }
+      _minNController.text = '$_minN';
+      _maxNController.text = '$_maxN';
+    });
+  }
 
+  void _randomizeRangeOfA() {
+    setState(() {
+      _minA = Random.secure().nextInt(_MAX_A_VALUE);
+      _maxA = Random.secure().nextInt(_MAX_A_VALUE);
+      //Ensure _maxN > _minN
+      if(_minA > _maxA){
+        int range = _MAX_A_VALUE - _minA;
+        _maxA = _minA;
+        _maxA += Random.secure().nextInt(range) + 1;
+      }
+      _minAController.text = '$_minA';
+      _maxAController.text = '$_maxA';
+    });
+  }
+
+  void _randomizeN() {
+    setState(() {
+      _n = Random.secure().nextInt(_MAX_N) + 1;
+      _termsTxtFieldController.text = '$_n';
+      _termsTxtFieldController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _termsTxtFieldController.text.length)
+      );
+    });
+  }
+
+  void _setMinN(int value) {
+    setState(() {
+      // Don't let users enter a greater min than max
+      if(value < _maxN){
+        _minN = value;
+      }else{
+        _minNController.text = '$_minN';
+      }
+    });
+  }
+
+  void _setMaxN(int value) {
+    setState(() {
+      // Don't let users enter a smaller max than min
+      if(value > _minN){
+        _maxN = value;
+      }else{
+        _maxNController.text = '$_maxN';
+      }
+    });
+  }
+
+  void _setMinA(int value) {
+    setState(() {
+      // Don't let users enter a greater min than max
+      if(value < _maxA){
+        _minA = value;
+      }else{
+        _minAController.text = '$_minA';
+      }
+    });
+  }
+
+  void _setMaxA(int value) {
+    setState(() {
+      // Don't let users enter a smaller max than min
+      if(value > _minA){
+        _maxA = value;
+      }else{
+        _maxAController.text = '$_maxA';
+      }
+    });
+  }
+*/
 enum operations {operation1, operation2}
 
 operations? _selectedOperation = operations.operation1;

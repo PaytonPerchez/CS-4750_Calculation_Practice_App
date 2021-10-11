@@ -26,7 +26,7 @@ class _RootPowPageState extends State<RootPowPage> {
           preview2: Text('a\u207f'),
           attribute1: Text('n\u1d57\u02b0 root'),
           attribute2: Text('n\u1d57\u02b0 power'),
-          values: Preferences(),
+          values: Preferences('root'),
       ),
     );
   }

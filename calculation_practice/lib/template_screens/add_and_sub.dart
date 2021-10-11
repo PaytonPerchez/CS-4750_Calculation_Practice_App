@@ -26,7 +26,7 @@ class _AddSubPageState extends State<AddSubPage> {
         preview2: Text('a\u2081 - ... - a\u2099'),
         attribute1: Text('n terms'),
         attribute2: Text('n terms'),
-        values: Preferences(),
+        values: Preferences('+'),
       ),
     );
   }

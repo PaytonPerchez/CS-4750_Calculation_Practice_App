@@ -13,12 +13,15 @@ class Preferences {
   int _minA = 0;
   int _maxA = 0;
 
-  Preferences() {
+  String _operation = '';
+
+  Preferences(String operation) {
     _n = 0;
     _minN = _MIN_N;
     _maxN = _MAX_N;
     _minA = _MIN_A_VALUE;
     _maxA = _MAX_A_VALUE;
+    this._operation = operation;
   }
 
   int getN() {
@@ -39,6 +42,10 @@ class Preferences {
 
   int getMaxA() {
     return _maxA;
+  }
+
+  String getOperation() {
+    return _operation;
   }
 
   bool setMinN(int value) {
@@ -79,6 +86,10 @@ class Preferences {
     }else{
       return false;
     }
+  }
+
+  void setOperation(String newOperation) {
+    _operation = newOperation;
   }
 
   void randomizeRangeOfN() {

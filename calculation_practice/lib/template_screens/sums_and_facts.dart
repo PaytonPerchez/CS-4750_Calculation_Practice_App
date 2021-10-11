@@ -24,9 +24,9 @@ class _SumFacPageState extends State<SumFacPage> {
           preview1: Text('sum from i to n ()'),
           preview2: Text('a!'),
           // TODO figure out specifics of summation variables
-          attribute1: Text('n terms'),
-          attribute2: Text('n terms'),
-          values: Preferences(),
+          attribute1: Text(''),
+          attribute2: Text(''),
+          values: Preferences('sum'),
       ),
     );
   }
