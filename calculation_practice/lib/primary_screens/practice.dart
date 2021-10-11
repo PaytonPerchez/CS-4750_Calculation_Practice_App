@@ -14,6 +14,24 @@ class PracticePage extends StatefulWidget {
 class _PracticePageState extends State<PracticePage> {
   Text _expression = Text('');
   TextField _textField = TextField();
+  TextButton _nextOption = TextButton(
+    onPressed: null,
+    child: Text(''),
+  );
+  TextButton _checkAns = TextButton(
+    onPressed: () {},
+    child: const ListTile(
+      title: const Text('Check'),
+      trailing: Icon(Icons.navigate_next),
+    ),
+  );
+  TextButton _practice = TextButton(
+    onPressed: () {},
+    child: const ListTile(
+      title: const Text('Practice'),
+      trailing: Icon(Icons.navigate_next),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +58,7 @@ class _PracticePageState extends State<PracticePage> {
               ),
               // Practice Button
               Flexible(
-                child: TextButton(
-                  onPressed: () {},
-                  child: const ListTile(
-                    title: const Text('Practice'),
-                    trailing: Icon(Icons.navigate_next),
-                  ),
-                ),
+                child: _nextOption,
               ),
             ],
           ),
@@ -57,7 +69,9 @@ class _PracticePageState extends State<PracticePage> {
 
   @override
   void initState() {
+    // form the expression
     //_expression = widget.subject;
+    _nextOption = _checkAns;
     super.initState();
   }
 }

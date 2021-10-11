@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:calculation_practice/misc_screens/general_template_screen.dart';
+import 'package:calculation_practice/util/Preferences.dart';
 
 class SumFacPage extends StatefulWidget {
   const SumFacPage({Key? key, required this.title}) : super(key: key);
@@ -24,7 +25,8 @@ class _SumFacPageState extends State<SumFacPage> {
           preview2: Text('a!'),
           // TODO figure out specifics of summation variables
           attribute1: Text('n terms'),
-          attribute2: Text('n terms')
+          attribute2: Text('n terms'),
+          values: Preferences(),
       ),
     );
   }

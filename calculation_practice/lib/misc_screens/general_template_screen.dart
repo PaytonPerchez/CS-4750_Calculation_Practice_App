@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math';
+import 'package:calculation_practice/util/Preferences.dart';
 
 enum operations {operation1, operation2}
 
@@ -13,7 +13,8 @@ class GeneralScreen extends StatefulWidget {
     required this.preview1,
     required this.preview2,
     required this.attribute1,
-    required this.attribute2
+    required this.attribute2,
+    required this.values
   }) : super(key: key);
 
   final Widget operation1;
@@ -22,6 +23,7 @@ class GeneralScreen extends StatefulWidget {
   final Text preview2;
   final Text attribute1;
   final Text attribute2;
+  final Preferences values;
 
   @override
   _GeneralScreenState createState() => _GeneralScreenState();
@@ -31,7 +33,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
 
   Text _preview = Text('');
   Text _attribute = Text('');
-
+/*
   final int _MIN_N = 2;
   final int _MAX_N = 30;
   final int _MIN_A_VALUE = 0;
@@ -42,7 +44,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   int _maxN = 0;
   int _minA = 0;
   int _maxA = 0;
-
+*/
   TextEditingController _termsTxtFieldController = new TextEditingController();
   TextEditingController _minNController = new TextEditingController();
   TextEditingController _maxNController = new TextEditingController();
@@ -64,7 +66,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
       }
     });
   }
-
+/*
   void _randomizeRangeOfN() {
     setState(() {
       // Ensure there are at least two terms
@@ -149,7 +151,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
       }
     });
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -193,12 +195,19 @@ class _GeneralScreenState extends State<GeneralScreen> {
               // Number of terms
               _attribute,
               // Terms Randomizer
-              ElevatedButton(
+              /*ElevatedButton(
                 onPressed: () {
-                  _randomizeN();
+                  //_randomizeN(); // TODO
+                  widget.values.randomizeN();
+                  setState(() {
+                    _termsTxtFieldController.text = widget.values.getN().toString();
+                    _termsTxtFieldController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: _termsTxtFieldController.text.length)
+                    );
+                  });
                 },
                 child: const Text('Random'),
-              ),
+              ),*/
             ],
           ),
           const Divider(
@@ -223,11 +232,19 @@ class _GeneralScreenState extends State<GeneralScreen> {
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                         ],
                         onSubmitted: (String s) {
-                          try {
-                            _setMinN(int.parse(s));
-                          } on FormatException {
-                            _minNController.text = '$_minN';
-                          }
+                          setState(() {
+                            try {
+                              if (!widget.values.setMinN(int.parse(s))) {
+                                _minNController.text =
+                                    widget.values.getMinN().toString();
+                              }
+                              //_setMinN(int.parse(s)); // TODO don't forget about if
+
+                            } on FormatException {
+                              _minNController.text =
+                                  widget.values.getMinN().toString();
+                            }
+                          });
                         },
                       ),
                     ),
@@ -241,18 +258,31 @@ class _GeneralScreenState extends State<GeneralScreen> {
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                         ],
                         onSubmitted: (String s) {
-                          try {
-                            _setMaxN(int.parse(s));
-                          } on FormatException {
-                            _maxNController.text = '$_maxN';
-                          }
+                          setState(() {
+                            try {
+                              if (!widget.values.setMaxN(int.parse(s))) {
+                                _maxNController.text =
+                                    widget.values.getMaxN().toString();
+                              }
+                              //_setMaxN(int.parse(s)); // TODO
+
+                            } on FormatException {
+                              _maxNController.text =
+                                  widget.values.getMaxN().toString();
+                            }
+                          });
                         },
                       ),
                     ),
                     // Randomize the range of n
                     ElevatedButton(
                       onPressed: () {
-                        _randomizeRangeOfN();
+                        widget.values.randomizeRangeOfN();
+                        //_randomizeRangeOfN(); // TODO
+                        setState(() {
+                          _minNController.text = widget.values.getMinN().toString();
+                          _maxNController.text = widget.values.getMaxN().toString();
+                        });
                       },
                       child: Icon(Icons.casino),
                     ),
@@ -270,11 +300,17 @@ class _GeneralScreenState extends State<GeneralScreen> {
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                         ],
                         onSubmitted: (String s) {
-                          try {
-                            _setMinA(int.parse(s));
-                          } on FormatException {
-                            _minAController.text = '$_minA';
-                          }
+                          setState(() {
+                            try {
+                              if(!widget.values.setMinA(int.parse(s))) {
+                                _minAController.text = widget.values.getMinA().toString();
+                              }
+                              //_setMinA(int.parse(s)); // TODO
+
+                            } on FormatException {
+                              _minAController.text = widget.values.getMinA().toString();
+                            }
+                          });
                         },
                       ),
                     ),
@@ -288,18 +324,29 @@ class _GeneralScreenState extends State<GeneralScreen> {
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                         ],
                         onSubmitted: (String s) {
-                          try {
-                            _setMaxA(int.parse(s));
-                          } on FormatException {
-                            _maxAController.text = '$_maxA';
-                          }
+                          setState(() {
+                            try {
+                              if(!widget.values.setMaxA(int.parse(s))) {
+                                _maxAController.text = widget.values.getMaxA().toString();
+                              }
+                              //_setMaxA(int.parse(s)); // TODO
+
+                            } on FormatException {
+                              _maxAController.text = widget.values.getMaxA().toString();
+                            }
+                          });
                         },
                       ),
                     ),
                     // Randomize the range of a
                     ElevatedButton(
                       onPressed: () {
-                        _randomizeRangeOfA();
+                        widget.values.randomizeRangeOfA();
+                        setState(() {
+                          //_randomizeRangeOfA(); // TODO
+                          _minAController.text = widget.values.getMinA().toString();
+                          _maxAController.text = widget.values.getMaxA().toString();
+                        });
                       },
                       child: Icon(Icons.casino),
                     ),
@@ -310,9 +357,22 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   children: <Widget>[
                     ElevatedButton(
                       onPressed: () {
-                        _randomizeN();
-                        _randomizeRangeOfN();
-                        _randomizeRangeOfA();
+                        widget.values.randomizeN();
+                        widget.values.randomizeRangeOfN();
+                        widget.values.randomizeRangeOfA();
+                        //_randomizeN(); // TODO
+                        /*_termsTxtFieldController.text = '$_n';
+                        _termsTxtFieldController.selection = TextSelection.fromPosition(
+                            TextPosition(offset: _termsTxtFieldController.text.length)
+                        );*/
+                        //_randomizeRangeOfN(); // TODO don't forget about setState()
+                        //_randomizeRangeOfA();
+                        setState(() {
+                          _minNController.text = widget.values.getMinN().toString();
+                          _maxNController.text = widget.values.getMaxN().toString();
+                          _minAController.text = widget.values.getMinA().toString();
+                          _maxAController.text = widget.values.getMaxA().toString();
+                        });
                       },
                       child: const Text('Randomize All'),
                     ),
@@ -356,15 +416,15 @@ class _GeneralScreenState extends State<GeneralScreen> {
     super.initState();
     _preview = widget.preview1;
     _attribute = widget.attribute1;
-    _n = _MIN_N;
+    /*_n = _MIN_N;
     _minN = _MIN_N;
     _maxN = _MAX_N;
     _minA = _MIN_A_VALUE;
-    _maxA = _MAX_A_VALUE;
-    _minNController.text = '$_minN';
-    _maxNController.text = '$_maxN';
-    _minAController.text = '$_minA';
-    _maxAController.text = '$_maxA';
+    _maxA = _MAX_A_VALUE;*/
+    _minNController.text = widget.values.getMinN().toString();
+    _maxNController.text = widget.values.getMaxN().toString();
+    _minAController.text = widget.values.getMinA().toString();
+    _maxAController.text = widget.values.getMaxA().toString();
   }
 
   Text generateExpression() {

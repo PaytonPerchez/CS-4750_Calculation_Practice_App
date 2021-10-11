@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:calculation_practice/misc_screens/general_template_screen.dart';
+import 'package:calculation_practice/util/Preferences.dart';
 
 class RootPowPage extends StatefulWidget {
   RootPowPage({Key? key, required this.title}) : super(key: key);
@@ -24,7 +25,8 @@ class _RootPowPageState extends State<RootPowPage> {
           preview1: Text('a\u00b9/\u207f'),
           preview2: Text('a\u207f'),
           attribute1: Text('n\u1d57\u02b0 root'),
-          attribute2: Text('n\u1d57\u02b0 power')
+          attribute2: Text('n\u1d57\u02b0 power'),
+          values: Preferences(),
       ),
     );
   }

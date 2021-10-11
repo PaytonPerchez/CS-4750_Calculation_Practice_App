@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:calculation_practice/misc_screens/general_template_screen.dart';
+import 'package:calculation_practice/util/Preferences.dart';
 
 class TrigLogPage extends StatefulWidget {
   const TrigLogPage({Key? key, required this.title}) : super(key: key);
@@ -43,8 +44,9 @@ class _TrigLogPageState extends State<TrigLogPage> {
           preview1: Text('sin\u207f(a)'),
           preview2: Text('log\u2099(a)'),
           attribute1: Text('n\u1d57\u02b0 power'),
-          attribute2: Text('base n')
+          attribute2: Text('base n'),
+          values: Preferences(),
       ),
-    );;
+    );
   }
 }
