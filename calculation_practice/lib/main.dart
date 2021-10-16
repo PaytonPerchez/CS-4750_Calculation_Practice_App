@@ -8,7 +8,6 @@ import 'package:calculation_practice/template_screens/trig_and_logs.dart';
 import 'package:calculation_practice/template_screens/sums_and_facts.dart';
 import 'package:calculation_practice/template_screens/derivs_and_ints.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tex/flutter_tex.dart';
 
 /*
 Raised Button = Elevated Button
@@ -21,6 +20,7 @@ void main() {
 }
 
 class CalculatorPractice extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,6 +28,7 @@ class CalculatorPractice extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
+      debugShowCheckedModeBanner: false,
       home: MyHomePage(title: 'Current Home Page'),
       routes: <String, WidgetBuilder>{
         '/addSub': (BuildContext context) => new AddSubPage(title: 'AddSub'),
@@ -52,12 +53,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  int _selectedIndex = 0;
+  int _selectedIndex = 0; // used for indexed stack
   String _appBarTitle = 'Calculator';
 
+  /// Switches between the Calculator, Templates, and Settings screens.
+  /// * index: The screen being switched to.
   void _onItemTapped(int index){
     setState((){
+
       _selectedIndex = index;
+
       switch(index) {
         case 0:
           _appBarTitle = 'Calculator';
@@ -76,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_appBarTitle),
