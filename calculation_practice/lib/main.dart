@@ -1,20 +1,30 @@
 import 'package:calculation_practice/primary_screens/templates.dart';
 import 'package:calculation_practice/primary_screens/calculator.dart';
 import 'package:calculation_practice/primary_screens/settings.dart';
-import 'package:calculation_practice/template_screens/root_and_pow.dart';
-import 'package:calculation_practice/template_screens/add_and_sub.dart';
-import 'package:calculation_practice/template_screens/mult_and_div.dart';
-import 'package:calculation_practice/template_screens/trig_and_logs.dart';
-import 'package:calculation_practice/template_screens/sums_and_facts.dart';
-import 'package:calculation_practice/template_screens/derivs_and_ints.dart';
+import 'package:calculation_practice/template_screens/root.dart';
+import 'package:calculation_practice/template_screens/pow.dart';
+import 'package:calculation_practice/template_screens/add.dart';
+import 'package:calculation_practice/template_screens/sub.dart';
+import 'package:calculation_practice/template_screens/mult.dart';
+import 'package:calculation_practice/template_screens/div.dart';
+import 'package:calculation_practice/template_screens/trig.dart';
+import 'package:calculation_practice/template_screens/logs.dart';
+import 'package:calculation_practice/template_screens/sums.dart';
+import 'package:calculation_practice/template_screens/fac.dart';
+import 'package:calculation_practice/template_screens/derivs.dart';
+import 'package:calculation_practice/template_screens/int.dart';
+import 'package:calculation_practice/template_screens/random.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tex/flutter_tex.dart';
 
 /*
 Raised Button = Elevated Button
 FlatButton = TextButton
 Outline Button = Outlined Button
  */
+enum operations {operation1, operation2}
 
+operations? _selectedOperation = operations.operation1;
 void main() {
   runApp(CalculatorPractice());
 }
@@ -24,19 +34,26 @@ class CalculatorPractice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Calculation Practice',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: 'Current Home Page'),
+      home: MyHomePage(title: 'Calculator'),
       routes: <String, WidgetBuilder>{
-        '/addSub': (BuildContext context) => new AddSubPage(title: 'AddSub'),
-        '/multDiv': (BuildContext context) => new MultDivPage(title: 'MultDiv'),
-        '/rootPow': (BuildContext context) => new RootPowPage(title: 'RootPow'),
-        '/trigLog': (BuildContext context) => new TrigLogPage(title: 'TrigLog'),
-        '/sumFac': (BuildContext context) => new SumFacPage(title: 'SumFac'),
-        '/derivInt': (BuildContext context) => new DerivIntPage(title: 'DerivInt'),
+        '/add': (BuildContext context) => new AddPage(title: 'Add'),
+        '/sub': (BuildContext context) => new SubPage(title: 'Sub'),
+        '/mult': (BuildContext context) => new MultPage(title: 'Mult'),
+        '/div': (BuildContext context) => new DivPage(title: 'Div'),
+        '/root': (BuildContext context) => new RootPage(title: 'Root'),
+        '/pow': (BuildContext context) => new PowPage(title: 'Pow'),
+        '/trig': (BuildContext context) => new TrigPage(title: 'Trig'),
+        '/log': (BuildContext context) => new LogPage(title: 'Log'),
+        '/sum': (BuildContext context) => new SumPage(title: 'Sum'),
+        '/fac': (BuildContext context) => new FacPage(title: 'Fac'),
+        '/deriv': (BuildContext context) => new DerivPage(title: 'Deriv'),
+        '/int': (BuildContext context) => new IntPage(title: 'Int'),
+        '/random': (BuildContext context) => new RandomPage(/*title: 'Random'*/)
       },
     );
   }
@@ -87,14 +104,12 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(_appBarTitle),
       ),
       body:
-        /*//x = {-b \pm \sqrt{b^2-4ac} \over 2a}.
-        TeXView(
-          child: TeXViewDocument(r"""$$\int$$<br> """),
-        ),*/
+      ///*
       SafeArea(
         top: false,
         child: IndexedStack(
           index: _selectedIndex,
+          alignment: Alignment(0.0, 0.0),
           children: <Widget>[
             CalculatorPage(title: 'Calculator'),
             TemplatePage(title: 'Templates'),
@@ -122,13 +137,13 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: (int index) {
           _onItemTapped(index);
         },
-      ),
+      ),//*/
     );
   }
 
   @override
   void initState() {
-    super.initState();
     _appBarTitle = widget.title;
+    super.initState();
   }
 }

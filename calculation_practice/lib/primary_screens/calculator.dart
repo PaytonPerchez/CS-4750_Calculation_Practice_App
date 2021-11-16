@@ -1,7 +1,9 @@
-import 'package:calculation_practice/primary_screens/templates.dart';
-import 'package:calculation_practice/primary_screens/settings.dart';
+import 'package:calculation_practice/util/BackspaceKey.dart';
 import 'package:flutter/material.dart';
+import 'package:calculation_practice/util/CustomKeyboard.dart';
 
+/// Parts of this class were adapted from the following article:
+/// https://medium.com/flutter-community/custom-in-app-keboard-in-flutter-b925d56c8465
 class CalculatorPage extends StatefulWidget {
   CalculatorPage({Key? key, required this.title}) : super(key: key);
 
@@ -14,403 +16,196 @@ class CalculatorPage extends StatefulWidget {
 class _CalculatorPageState extends State<CalculatorPage> {
   String _constant = 'pi';
   String _variable = 'x';
-  double _buttonContainerWidth = 190;
-  double _buttonContainerHeight = 400;
+  TextEditingController _controller = TextEditingController();
+  TextStyle _textStyle = TextStyle(
+    fontSize: 24,
+    color: Colors.grey,
+  );
+
+  void _onBackspace() {
+    final text = _controller.text;
+    final textSelection = _controller.selection;
+    final selectionLength = textSelection.end - textSelection.start;
+
+    // There is a selection.
+    if(selectionLength > 0) {
+      final newText = text.replaceRange(
+        textSelection.start,
+        textSelection.end,
+        '',
+      );
+      _controller.text = newText;
+      _controller.selection = textSelection.copyWith(
+        baseOffset: textSelection.start,
+        extentOffset: textSelection.start
+      );
+      return;
+    }
+
+    // The cursor is at the beginning.
+    if(textSelection.start == 0) {
+      return;
+    }
+
+    // Delete the previous character
+    //final previousCodeUnit = text.codeUnitAt(textSelection.start - 1);
+    final offset = 1;
+    final newStart = textSelection.start - offset;
+    final newEnd = textSelection.start;
+    final newText = text.replaceRange(
+      newStart,
+      newEnd,
+      '',
+    );
+    _controller.text = newText;
+    _controller.selection = textSelection.copyWith(
+      baseOffset: newStart,
+      extentOffset: newStart,
+    );
+  }
+
+  void _onTextInput(String input) {
+    final text = _controller.text;
+    final textSelection = _controller.selection;
+    final newText = text.replaceRange(
+      textSelection.start,
+      textSelection.end,
+      input,
+    );
+    final inputLength = input.length;
+    _controller.text = newText;
+    _controller.selection = textSelection.copyWith(
+      baseOffset: textSelection.start + inputLength,
+      extentOffset: textSelection.start + inputLength,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
 
-        // Expression preview and save button
-        Row(
-          children: [
-            // TODO If the widgets still do not fit well with
-            // TODO one another, then use SizedBox
-            Expanded(
-              //width: 200,
-              //height: 100,
-              child: Text(
-                'This is the calculator page',
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+
+          // Expression preview and save button
+          Expanded(
+            flex: 1,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 7,
+                  child: TextField(
+                    controller: _controller,
+                    showCursor: true,
+                    readOnly: true,
+                    style: _textStyle,
+                  ),
+                ),
+                BackspaceKey(
+                  flex: 1,
+                  onBackspace: _onBackspace,
+                ),
+              ],
             ),
-          ],
-        ),
-
-        // Main buttons
-        Container(
-          //color: Colors.green,
-          width: 448,
-          height: 400,
-          child: Row(
-            children: [
-
-              // Operation buttons
-              Container(
-                width: _buttonContainerWidth,
-                // TODO the increase height may be contributing to vertical space between buttons
-                height: _buttonContainerHeight,
-                child: Column(
-                  children: [
-
-                    // +, -, *, /
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('+'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('-'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('*'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('/'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Root, Pow, !
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('root'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('pow'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('!'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // sin, cos, tan
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('sin'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('cos'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('tan'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // log, ln, sum
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('log'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('ln'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('sum'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // int, deriv
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('int'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('deriv'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // nCr, nPr
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('nCr'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('nPr'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Number buttons
-              Container(
-                width: _buttonContainerWidth,
-                height: _buttonContainerHeight,
-                child: Column(
-                  children: [
-
-                    // 1, 2, 3
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('1'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('2'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('3'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // 4, 5, 6
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('4'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('5'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('6'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // 7, 8, 9
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('7'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('8'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('9'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // 0, ., (-)
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('0'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('.'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('(-)'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // (, ), rand
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('('),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text(')'),
-                            onPressed: null,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            child: Text('rand'),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // const, vars
-                    Row(
-                      children: [
-                        DropdownButton<String>(
-                          value: _constant,
-                          icon: const Icon(Icons.arrow_downward),
-                          iconSize: 24,
-                          elevation: 16,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _constant = newValue!;
-                            });
-                          },
-                          items: <String>['pi', 'e', 'i']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                        OutlinedButton(
-                          child: Text('vars'),
-                          onPressed: null,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ),
-        ),
 
-        // Left, right, backspace, and equal buttons
-        Row(
-          children: [
-            OutlinedButton(
-              child: Text('<-'),
-              onPressed: null,
+          // Empty space between keyboard and text field
+          Expanded(
+            child: Text(''),
+            flex: 1,
+          ),
+
+          // Main buttons
+          Expanded(
+            flex: 6,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+
+                // Operation buttons
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomKeyboard(
+                      onTextInput: (input) {
+                        _onTextInput(input);
+                      },
+                      buttons: [
+                        ['+', '-', '\u00d7', '\u00f7'],
+                        ['\u221a', '^', '!'],
+                        ['sin', 'cos', 'tan'],
+                        ['log', 'ln', '\u2211'],
+                        ['nCr', 'nPr'],
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Number buttons
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomKeyboard(
+                      onTextInput: (input) {
+                        _onTextInput(input);
+                      },
+                      buttons: [
+                        ['1', '2', '3'],
+                        ['4', '5', '6'],
+                        ['7', '8', '9'],
+                        ['0', '.', '(-)'],
+                        ['(', ')', 'a'],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            OutlinedButton(
-              child: Text('->'),
-              onPressed: null,
+          ),
+
+          // Empty space between main buttons and bottom buttons
+          Expanded(
+            child: Text(''),
+            flex: 1,
+          ),
+
+          // Left, right, backspace, and equal buttons
+          Expanded(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                OutlinedButton(
+                  child: Icon(Icons.west),
+                  onPressed: null,
+                ),
+                OutlinedButton(
+                  child: Icon(Icons.east),
+                  onPressed: null,
+                ),
+                OutlinedButton(
+                  child: Icon(Icons.save),
+                  onPressed: null,
+                ),
+                OutlinedButton(
+                  child: Text(
+                    '=',
+                    style: _textStyle,
+                  ),
+                  onPressed: null,
+                ),
+              ],
             ),
-            OutlinedButton(
-              child: Text('backspc'),
-              onPressed: null,
-            ),
-            OutlinedButton(
-              child: Text('='),
-              onPressed: null,
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

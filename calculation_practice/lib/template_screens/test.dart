@@ -1,4 +1,4 @@
-import 'package:calculation_practice/template_screens/root_and_pow.dart';
+import 'package:calculation_practice/template_screens/root.dart';
 import 'package:flutter/material.dart';
 
 /*
@@ -25,7 +25,7 @@ class CalculatorPractice extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.green,
       ),
-      home: RootPowPage(title: 'Current Home Page'),
+      home: RootPage(title: 'Current Home Page'),
     );
   }
 }

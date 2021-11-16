@@ -1,5 +1,3 @@
-import 'package:calculation_practice/primary_screens/templates.dart';
-import 'package:calculation_practice/primary_screens/calculator.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -13,73 +11,106 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
 
+  TextStyle _textStyle = TextStyle(
+    fontSize: 20,
+    color: Colors.black,
+  );
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      //mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
 
-        // Precision
-        Container(
-          child: Column(
-            children: [
-              Text('Precision'),
-              Text('22/7 = 3.141285714'),
-            ],
+      child: Column(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+
+          /*// Precision
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Text('Precision'),
+
+                ),
+                Text('22/7 = 3.141285714'),
+              ],
+            ),
           ),
-        ),
 
-        // Color scheme
-        Container(
-          child: Column(
-            children: [
-              Text('Color Scheme'),
-              Row(
-                children: [
-                  OutlinedButton(
-                    child: Icon(Icons.crop_square),
-                    onPressed: null,
+          // Color scheme
+          Container(
+            child: Column(
+              children: [
+                Text('Color Scheme'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    OutlinedButton(
+                      child: Icon(Icons.crop_square),
+                      onPressed: null,
+                    ),
+                    OutlinedButton(
+                      child: Icon(Icons.crop_square),
+                      onPressed: null,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),*/
+
+          // Text size
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'Text Size',
+                    style: _textStyle,
                   ),
-                  OutlinedButton(
-                    child: Icon(Icons.crop_square),
-                    onPressed: null,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'Aa',
+                    style: _textStyle,
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
-        ),
 
-        // Text size
-        Container(
-          child: Column(
-            children: [
-              Text('Text Size'),
-              Text('Aa'),
-            ],
-          ),
-        ),
+          Expanded(flex: 2, child: Text('')),
 
-        // Statistics
-        Container(
-          child: Column(
-            children: [
-              Text('Statistics'),
-              Text('# of problems generated'),
-            ],
+          // About
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'About',
+                    style: _textStyle,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'This is the settings page',
+                    style: _textStyle,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-
-        // About
-        Container(
-          child: Column(
-            children: [
-              Text('About'),
-              Text('This is the settings page'),
-            ],
-          ),
-        ),
-      ],
+          Expanded(flex: 8, child: Text('')),
+        ],
+      ),
     );
   }
 }

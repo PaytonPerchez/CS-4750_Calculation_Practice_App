@@ -2,31 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:calculation_practice/util/Preferences.dart';
 import 'package:calculation_practice/primary_screens/practice.dart';
+
+//import 'package:flutter_tex/flutter_tex.dart';
 /*_termsTxtFieldController.text = '$_n';
 _termsTxtFieldController.selection = TextSelection.fromPosition(
   TextPosition(offset: _termsTxtFieldController.text.length)
 );*/
-enum operations {operation1, operation2}
+enum operations { operation1, operation2 }
 
 operations? _selectedOperation = operations.operation1;
 
 class GeneralScreen extends StatefulWidget {
-  const GeneralScreen({Key? key,
-    required this.operation1,
-    required this.operation2,
-    required this.preview1,
-    required this.preview2,
-    required this.attribute1,
-    required this.attribute2,
-    required this.values
-  }) : super(key: key);
+  const GeneralScreen(
+      {Key? key,
+      required this.operation,
+      required this.preview,
+      required this.attribute,
+      required this.values})
+      : super(key: key);
 
-  final Widget operation1;
-  final Widget operation2;
-  final Text preview1;
-  final Text preview2;
-  final Text attribute1;
-  final Text attribute2;
+  final Widget operation;
+  final Widget preview;
+  final Text attribute;
   final Preferences values;
 
   @override
@@ -34,9 +31,12 @@ class GeneralScreen extends StatefulWidget {
 }
 
 class _GeneralScreenState extends State<GeneralScreen> {
-
-  Text _preview = Text('');
-  Text _attribute = Text('');
+  String _trigFunction = 'sin';
+  Widget _preview = Text(''); // displays the format for a practice problem
+  TextStyle _textStyle = TextStyle(
+    fontSize: 20,
+    color: Colors.black,
+  );
 
   TextEditingController _minNController = new TextEditingController();
   TextEditingController _maxNController = new TextEditingController();
@@ -44,135 +44,166 @@ class _GeneralScreenState extends State<GeneralScreen> {
   TextEditingController _maxAController = new TextEditingController();
 
   // TODO methods start here
-  /// Changes the selected operation to the one specified, which changes the expression preview and attribute.
-  /// value: The operation specified.
-  void _operationSelected(operations? value) {
-
+  /// Sets the current trigonometric function to the specified value.
+  /// * newValue: The specified value.
+  void _setTrigFunction(String? newValue) {
     setState(() {
+      _trigFunction = newValue!;
+      widget.values.setOperation(_trigFunction);
 
-      _selectedOperation = value;
-
-      switch(value){
-        case operations.operation1:
-
-          _preview = widget.preview1;
-          _attribute = widget.attribute1;
-
-          // Get the String representation of the operation and store it in Preferences
-          widget.values.setOperation(getOperationSelected(value));
-          break;
-
-        case operations.operation2:
-
-          _preview = widget.preview2;
-          _attribute = widget.attribute2;
-
-          // Get the String representation of the operation and store it in Preferences
-          widget.values.setOperation(getOperationSelected(value));
-          break;
+      // Don't change the preview if a trig operation is not selected
+      if (_selectedOperation == operations.operation1) {
+        _preview = Text(
+          '$_trigFunction\u207f(a)',
+          style: _textStyle,
+        );
       }
+      //_preview = TeXView(child: TeXViewDocument(r"""$$\""" + _trigFunction + r"""^{n}a$$<br> """,));
     });
   }
 
-  /// Returns a String representation of the specified operation.
-  /// value: The specified operation.
-  String getOperationSelected(operations? value) {
-
-    switch(widget.attribute1.data) {
-      // (+, -), (*, /)
-      case 'n terms':
-        if(value == operations.operation1) {
-          return (widget.operation1 as Text).data.toString();
-        } else {
-          return (widget.operation2 as Text).data.toString();
-        }
-
-      // Root, pow
-      case 'n\u1d57\u02b0 root':
-        if(value == operations.operation1) {
-          return 'root';
-        } else {
-          return '^';
-        }
-
-      // (sin, cos, tan), (log), (deriv, int)
-      case 'n\u1d57\u02b0 power':
-        if(widget.attribute2.data!.compareTo('base n') == 0) {
-          if(value == operations.operation1) {
-            // TODO I have no idea if this will work
-            return (widget.operation1 as DropdownButton).value.toString();
-          } else {
-            return 'log';
-          }
-        } else {
-          if(value == operations.operation1) {
-            return 'deriv';
-          } else {
-            return 'int';
-          }
-        }
-
-      // sum, fac
-      case '':
-        if(value == operations.operation1) {
-          return 'sum';
-        } else {
-          return '!';
-        }
-
-      // TODO nPr, nCr, random
+  /// Determines if the current operation is trigonometric.
+  /// * Returns true if the current operation is trigonometric, false otherwise.
+  bool _isTrigFunction() {
+    switch (widget.values.getOperation()) {
+      case 'sin':
+      case 'cos':
+      case 'tan':
+        return true;
       default:
-        return '';
+        return false;
+    }
+  }
+
+  /// TODO write later
+  Widget _getRangeOfN() {
+    if(widget.values.getOperation().compareTo('!') != 0) {
+      return Row(
+        children: [
+          // Minimum of n
+          Flexible(
+            child: TextField(
+              style: _textStyle,
+              controller: _minNController,
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+              ],
+              // TODO consider checking for submission
+              onSubmitted: (String s) {
+                setState(() {
+                  try {
+                    // Do not change the text if unsuccessful
+                    if (!widget.values.setMinN(int.parse(s))) {
+                      _minNController.text =
+                          widget.values.getMinN().toString();
+                    }
+                  } on FormatException {
+                    _minNController.text =
+                        widget.values.getMinN().toString();
+                  }
+                });
+              },
+            ),
+          ),
+          Container(
+            height: 50,
+            width: 100,
+            child: Text(
+              '\u2264 n \u2264',
+              style: _textStyle,
+            ),
+            /*TeXView(
+                        child: TeXViewDocument(
+                            r"""$$\leq n \leq$$<br> """,
+                        ),
+                      ),*/
+          ),
+          // Maximum of n
+          Flexible(
+            child: TextField(
+              style: _textStyle,
+              controller: _maxNController,
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+              ],
+              // TODO consider checking for submission
+              onSubmitted: (String s) {
+                setState(() {
+                  try {
+                    // Do not change the text if unsuccessful
+                    if (!widget.values.setMaxN(int.parse(s))) {
+                      _maxNController.text =
+                          widget.values.getMaxN().toString();
+                    }
+                  } on FormatException {
+                    _maxNController.text =
+                        widget.values.getMaxN().toString();
+                  }
+                });
+              },
+            ),
+          ),
+          // Randomize the range of n
+          ElevatedButton(
+            onPressed: () {
+              widget.values.randomizeRangeOfN();
+              setState(() {
+                _minNController.text =
+                    widget.values.getMinN().toString();
+                _maxNController.text =
+                    widget.values.getMaxN().toString();
+              });
+            },
+            child: Icon(Icons.casino),
+          ),
+        ],
+      );
+    } else {
+      return Text('');
     }
   }
 
   // TODO UI starts here
   @override
   Widget build(BuildContext context) {
-
     return Container(
       child: Column(
         children: <Widget>[
-          // Main Settings
-          Container(
-            // Operations
-            child: Row(
-              children: <Widget>[
-                // Operation 1
-                Row(
-                  children: <Widget>[
-                    widget.operation1,
-                    Radio<operations>(
-                      value: operations.operation1,
-                      groupValue: _selectedOperation,
-                      onChanged: _operationSelected,
+          // Operation
+          if (_isTrigFunction())
+            Container(
+              height: 100,
+              width: 100,
+              child: Row(
+                children: <Widget>[
+                  Flexible(
+                    child: DropdownButton<String>(
+                      value: _trigFunction,
+                      iconSize: 24,
+                      elevation: 16,
+                      onChanged: (String? newValue) {
+                        _setTrigFunction(newValue);
+                      },
+                      items: <String>['sin', 'cos', 'tan']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
                     ),
-                  ],
-                ),
-                // Operation 2
-                Row(
-                  children: <Widget>[
-                    widget.operation2,
-                    Radio<operations>(
-                      value: operations.operation2,
-                      groupValue: _selectedOperation,
-                      onChanged: _operationSelected,
-                    ),
-                  ],
-                ),
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
           // Preview
-          _preview,
-          // Attribute information
-          // TODO This row may be unnecessary
-          Row(
-            children: <Widget>[
-              // Description of n
-              _attribute,
-            ],
+          Flexible(
+            child: _preview,
           ),
+          // Attribute information
+          widget.attribute,
           const Divider(
             height: 20,
             thickness: 5,
@@ -184,74 +215,14 @@ class _GeneralScreenState extends State<GeneralScreen> {
             child: Column(
               children: [
                 // Range of n
-                Row(
-                  children: [
-                    // Minimum of n
-                    Flexible(
-                      child: TextField(
-                        controller: _minNController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                        ],
-                        // TODO consider checking for submission
-                        onSubmitted: (String s) {
-                          setState(() {
-                            try {
-                              // Do not change the text if unsuccessful
-                              if (!widget.values.setMinN(int.parse(s))) {
-                                _minNController.text = widget.values.getMinN().toString();
-                              }
-                            } on FormatException {
-                              _minNController.text = widget.values.getMinN().toString();
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                    Text('<= n <='),
-                    // Maximum of n
-                    Flexible(
-                      child: TextField(
-                        controller: _maxNController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                        ],
-                        // TODO consider checking for submission
-                        onSubmitted: (String s) {
-                          setState(() {
-                            try {
-                              // Do not change the text if unsuccessful
-                              if (!widget.values.setMaxN(int.parse(s))) {
-                                _maxNController.text = widget.values.getMaxN().toString();
-                              }
-                            } on FormatException {
-                              _maxNController.text = widget.values.getMaxN().toString();
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                    // Randomize the range of n
-                    ElevatedButton(
-                      onPressed: () {
-                        widget.values.randomizeRangeOfN();
-                        setState(() {
-                          _minNController.text = widget.values.getMinN().toString();
-                          _maxNController.text = widget.values.getMaxN().toString();
-                        });
-                      },
-                      child: Icon(Icons.casino),
-                    ),
-                  ],
-                ),
+                _getRangeOfN(),
                 // Range of a
                 Row(
                   children: [
                     // Minimum of a
                     Flexible(
                       child: TextField(
+                        style: _textStyle,
                         controller: _minAController,
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
@@ -262,20 +233,35 @@ class _GeneralScreenState extends State<GeneralScreen> {
                           setState(() {
                             try {
                               // Do not change the text if unsuccessful
-                              if(!widget.values.setMinA(int.parse(s))) {
-                                _minAController.text = widget.values.getMinA().toString();
+                              if (!widget.values.setMinA(int.parse(s))) {
+                                _minAController.text =
+                                    widget.values.getMinA().toString();
                               }
                             } on FormatException {
-                              _minAController.text = widget.values.getMinA().toString();
+                              _minAController.text =
+                                  widget.values.getMinA().toString();
                             }
                           });
                         },
                       ),
                     ),
-                    Text('<= a <='),
+                    Container(
+                      height: 50,
+                      width: 100,
+                      child: Text(
+                        '\u2264 a \u2264',
+                        style: _textStyle,
+                      ),
+                      /*TeXView(
+                        child: TeXViewDocument(
+                            r"""$$\leq a \leq$$<br> """,
+                        ),
+                      ),*/
+                    ),
                     // Maximum of a
                     Flexible(
                       child: TextField(
+                        style: _textStyle,
                         controller: _maxAController,
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
@@ -286,11 +272,13 @@ class _GeneralScreenState extends State<GeneralScreen> {
                           setState(() {
                             try {
                               // Do not change the text if unsuccessful
-                              if(!widget.values.setMaxA(int.parse(s))) {
-                                _maxAController.text = widget.values.getMaxA().toString();
+                              if (!widget.values.setMaxA(int.parse(s))) {
+                                _maxAController.text =
+                                    widget.values.getMaxA().toString();
                               }
                             } on FormatException {
-                              _maxAController.text = widget.values.getMaxA().toString();
+                              _maxAController.text =
+                                  widget.values.getMaxA().toString();
                             }
                           });
                         },
@@ -301,8 +289,10 @@ class _GeneralScreenState extends State<GeneralScreen> {
                       onPressed: () {
                         widget.values.randomizeRangeOfA();
                         setState(() {
-                          _minAController.text = widget.values.getMinA().toString();
-                          _maxAController.text = widget.values.getMaxA().toString();
+                          _minAController.text =
+                              widget.values.getMinA().toString();
+                          _maxAController.text =
+                              widget.values.getMaxA().toString();
                         });
                       },
                       child: Icon(Icons.casino),
@@ -310,24 +300,24 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   ],
                 ),
                 // Randomize All
-                // TODO row widget may be unnecessary
-                Row(
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: () {
-                        widget.values.randomizeN();
-                        widget.values.randomizeRangeOfN();
-                        widget.values.randomizeRangeOfA();
-                        setState(() {
-                          _minNController.text = widget.values.getMinN().toString();
-                          _maxNController.text = widget.values.getMaxN().toString();
-                          _minAController.text = widget.values.getMinA().toString();
-                          _maxAController.text = widget.values.getMaxA().toString();
-                        });
-                      },
-                      child: const Text('Randomize All'),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.values.randomizeRangeOfN();
+                    widget.values.randomizeRangeOfA();
+                    setState(() {
+                      _minNController.text = widget.values.getMinN().toString();
+                      _maxNController.text = widget.values.getMaxN().toString();
+                      _minAController.text = widget.values.getMinA().toString();
+                      _maxAController.text = widget.values.getMaxA().toString();
+                    });
+                  },
+                  child: const Text(
+                    'Randomize All',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -336,10 +326,11 @@ class _GeneralScreenState extends State<GeneralScreen> {
           Row(
             children: [
               // Back Button
-              // TODO may be unnecessary, therefore the row widget may be unnecessary as well
               Flexible(
                 child: TextButton(
-                  onPressed: () {Navigator.pop(context);},
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: const ListTile(
                     title: const Text('Back'),
                     leading: Icon(Icons.navigate_before),
@@ -350,11 +341,11 @@ class _GeneralScreenState extends State<GeneralScreen> {
               Flexible(
                 child: TextButton(
                   onPressed: () {
-                    Navigator.push(context, new MaterialPageRoute(
-                        builder: (BuildContext context) => new PracticePage(
-                            title: 'Practice', subject: widget
-                        )
-                    ));
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (BuildContext context) => new PracticePage(
+                                title: 'Practice', preferences: widget.values)));
                   },
                   child: const ListTile(
                     title: const Text('Practice'),
@@ -371,12 +362,14 @@ class _GeneralScreenState extends State<GeneralScreen> {
 
   @override
   void initState() {
-    super.initState();
-    _preview = widget.preview1;
-    _attribute = widget.attribute1;
+    _selectedOperation = operations.operation1;
+
     _minNController.text = widget.values.getMinN().toString();
     _maxNController.text = widget.values.getMaxN().toString();
     _minAController.text = widget.values.getMinA().toString();
     _maxAController.text = widget.values.getMaxA().toString();
+
+    _preview = widget.preview;
+    super.initState();
   }
 }
