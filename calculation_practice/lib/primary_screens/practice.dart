@@ -1,6 +1,7 @@
 import 'package:calculation_practice/util/Preferences.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:calculation_practice/styles/Styles.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 
 enum nextOptions {check, practice}
@@ -27,10 +28,6 @@ class _PracticePageState extends State<PracticePage> {
   TextField _userAnswer2 = TextField(); // only used for derivatives and integrals
   TextEditingController _textFieldController1 = TextEditingController(); // controls primary text field
   TextEditingController _textFieldController2 = TextEditingController(); // controls secondary text field
-  TextStyle _textStyle = TextStyle(
-    fontSize: 20,
-    color: Colors.black,
-  );
 
   // status is true if the user's answer is correct, false if the answer
   // is incorrect, and blank while the user is solving the problem
@@ -73,7 +70,7 @@ class _PracticePageState extends State<PracticePage> {
           _displayedSolution = _symbolicAnswer;
 
         } else {
-          _displayedSolution = Text('$_answer1', style: _textStyle,);
+          _displayedSolution = Text('$_answer1', style: Styles.bodyStyle,);
         }
 
         _checkAnswer();
@@ -105,11 +102,17 @@ class _PracticePageState extends State<PracticePage> {
         if((double.parse(_textFieldController1.text) == _answer1) &&
             (double.parse(_textFieldController2.text) == _answer2)) {
 
-          _status = Text('Correct!', style: _textStyle,);
+          _status = Text(
+            'Correct!',
+            style: Styles.bodyStyle,
+          );
           return true;
 
         } else {
-          _status = Text('Incorrect', style: _textStyle,);
+          _status = Text(
+            'Incorrect',
+            style: Styles.bodyStyle,
+          );
           return false;
         }
 
@@ -124,10 +127,16 @@ class _PracticePageState extends State<PracticePage> {
       try {
 
         if(double.parse(_textFieldController1.text) == _answer1) {
-          _status = Text('Correct!', style: _textStyle,);
+          _status = Text(
+            'Correct!',
+            style: Styles.bodyStyle,
+          );
           return true;
         } else {
-          _status = Text('Incorrect', style: _textStyle,);
+          _status = Text(
+            'Incorrect',
+            style: Styles.bodyStyle,
+          );
           return false;
         }
 
@@ -205,7 +214,7 @@ class _PracticePageState extends State<PracticePage> {
 
       case '-':
         // Initialize the expression and answer with two terms
-        expression += ' - ' + _answer1.toInt().toString();
+        expression += ' \u2212 ' + _answer1.toInt().toString();
         _answer1 = num - _answer1;
         break;
 
@@ -222,7 +231,10 @@ class _PracticePageState extends State<PracticePage> {
         break;
     }
     expression += _genTerms(operation);
-    _expression = Text(expression, style: _textStyle,);
+    _expression = Text(
+      expression,
+      style: Styles.bodyStyle,
+    );
   }
 
   /// Generates random terms to be operated on by the specified operation.
@@ -235,6 +247,9 @@ class _PracticePageState extends State<PracticePage> {
     String actualOperation;
 
     switch(operation) {
+      case '-':
+        actualOperation = '\u2212';
+        break;
       case '*':
         actualOperation = '\u00d7';
         break;
@@ -293,9 +308,15 @@ class _PracticePageState extends State<PracticePage> {
 
       // Display a root expression
       _expression = TeXView(
-          child: TeXViewDocument(
-              r"""$$\sqrt[""" + widget.preferences.getN().toString() + r"""]{""" + base.toString() + r"""}$$<br> """
-          )
+        child: TeXViewDocument(
+          r"""$$\sqrt[""" + widget.preferences.getN().toString() + r"""]{""" + base.toString() + r"""}$$<br> """,
+        ),
+        style: TeXViewStyle(
+          backgroundColor: Colors.grey.shade50,
+          fontStyle: TeXViewFontStyle(
+              fontSize: Styles.bodyStyle.fontSize!.toInt()
+          ),
+        ),
       );
     } else {
 
@@ -304,9 +325,15 @@ class _PracticePageState extends State<PracticePage> {
 
       // Display an exponent expression
       _expression = TeXView(
-          child: TeXViewDocument(
-              r"""$$""" + base.toString() + r"""^{""" + widget.preferences.getN().toString() + r"""}$$<br> """
-          )
+        child: TeXViewDocument(
+          r"""$$""" + base.toString() + r"""^{""" + widget.preferences.getN().toString() + r"""}$$<br> """,
+        ),
+        style: TeXViewStyle(
+          backgroundColor: Colors.grey.shade50,
+          fontStyle: TeXViewFontStyle(
+              fontSize: Styles.bodyStyle.fontSize!.toInt()
+          ),
+        ),
       );
     }
   }
@@ -329,25 +356,43 @@ class _PracticePageState extends State<PracticePage> {
       case 'sin':
         _answer1 = pow(sin(theta), widget.preferences.getN()).toDouble();
         _expression = TeXView(
-            child: TeXViewDocument(
-                r"""$$\sin^{""" + widget.preferences.getN().toString() + r"""}(""" + theta.toString() + r""")$$<br> """
-            )
+          child: TeXViewDocument(
+            r"""$$\sin^{""" + widget.preferences.getN().toString() + r"""}(""" + theta.toString() + r""")$$<br> """,
+          ),
+          style: TeXViewStyle(
+            backgroundColor: Colors.grey.shade50,
+            fontStyle: TeXViewFontStyle(
+                fontSize: Styles.bodyStyle.fontSize!.toInt()
+            ),
+          ),
         );
         break;
       case 'cos':
         _answer1 = pow(cos(theta), widget.preferences.getN()).toDouble();
         _expression = TeXView(
-            child: TeXViewDocument(
-                r"""$$\cos^{""" + widget.preferences.getN().toString() + r"""}(""" + theta.toString() + r""")$$<br> """
-            )
+          child: TeXViewDocument(
+            r"""$$\cos^{""" + widget.preferences.getN().toString() + r"""}(""" + theta.toString() + r""")$$<br> """,
+          ),
+          style: TeXViewStyle(
+            backgroundColor: Colors.grey.shade50,
+            fontStyle: TeXViewFontStyle(
+                fontSize: Styles.bodyStyle.fontSize!.toInt()
+            ),
+          ),
         );
         break;
       case 'tan':
         _answer1 = pow(tan(theta), widget.preferences.getN()).toDouble();
         _expression = TeXView(
-            child: TeXViewDocument(
-                r"""$$\tan^{""" + widget.preferences.getN().toString() + r"""}(""" + theta.toString() + r""")$$<br> """
-            )
+          child: TeXViewDocument(
+            r"""$$\tan^{""" + widget.preferences.getN().toString() + r"""}(""" + theta.toString() + r""")$$<br> """,
+          ),
+          style: TeXViewStyle(
+            backgroundColor: Colors.grey.shade50,
+            fontStyle: TeXViewFontStyle(
+                fontSize: Styles.bodyStyle.fontSize!.toInt()
+            ),
+          ),
         );
         break;
     }
@@ -366,9 +411,15 @@ class _PracticePageState extends State<PracticePage> {
     _answer1 = (log(num)/log(widget.preferences.getN()));
 
     _expression = TeXView(
-        child: TeXViewDocument(
-            r"""$$\log_{""" + widget.preferences.getN().toString() + r"""}""" + num.toString() + r"""$$<br> """
-        )
+      child: TeXViewDocument(
+        r"""$$\log_{""" + widget.preferences.getN().toString() + r"""}""" + num.toString() + r"""$$<br> """,
+      ),
+      style: TeXViewStyle(
+        backgroundColor: Colors.grey.shade50,
+        fontStyle: TeXViewFontStyle(
+            fontSize: Styles.bodyStyle.fontSize!.toInt()
+        ),
+      ),
     );
   }
 
@@ -389,7 +440,10 @@ class _PracticePageState extends State<PracticePage> {
       _answer1 *= b;
       b--;
     }
-    _expression = Text('$num!', style: _textStyle,);
+    _expression = Text(
+      '$num!',
+      style: Styles.bodyStyle,
+    );
   }
 
   /// Generates a differential expression based on the subject's preferences.
@@ -402,9 +456,15 @@ class _PracticePageState extends State<PracticePage> {
     widget.preferences.randomizeN();
 
     _expression = TeXView(
-        child: TeXViewDocument(
-            r"""$$\frac{d}{dx} (""" + coefficient.toString() + r"""x^{""" + widget.preferences.getN().toString() + r"""}) = ax^n$$<br> """
-        )
+      child: TeXViewDocument(
+        r"""$$\frac{d}{dx} (""" + coefficient.toString() + r"""x^{""" + widget.preferences.getN().toString() + r"""}) = ax^n$$<br> """,
+      ),
+      style: TeXViewStyle(
+        backgroundColor: Colors.grey.shade50,
+        fontStyle: TeXViewFontStyle(
+            fontSize: Styles.bodyStyle.fontSize!.toInt()
+        ),
+      ),
     );
 
     // d/dx (ax^{n}) = (a*n)x^{n-1}
@@ -412,9 +472,15 @@ class _PracticePageState extends State<PracticePage> {
     _answer2 = (widget.preferences.getN() - 1).toDouble();
 
     _symbolicAnswer = TeXView(
-        child: TeXViewDocument(
-            r"""$$""" + _answer1.toString() + r"""x^{""" + _answer2.toString() + r"""}$$<br> """
-        )
+      child: TeXViewDocument(
+        r"""$$""" + _answer1.toString() + r"""x^{""" + _answer2.toString() + r"""}$$<br> """,
+      ),
+      style: TeXViewStyle(
+        backgroundColor: Colors.grey.shade50,
+        fontStyle: TeXViewFontStyle(
+            fontSize: Styles.bodyStyle.fontSize!.toInt()
+        ),
+      ),
     );
   }
 
@@ -428,9 +494,15 @@ class _PracticePageState extends State<PracticePage> {
     widget.preferences.randomizeN();
 
     _expression = TeXView(
-        child: TeXViewDocument(
-            r"""$$\int (""" + coefficient.toString() + r"""x^{""" + widget.preferences.getN().toString() + r"""}) dx = ax^n + C$$<br> """
-        )
+      child: TeXViewDocument(
+        r"""$$\int (""" + coefficient.toString() + r"""x^{""" + widget.preferences.getN().toString() + r"""}) dx = ax^n + C$$<br> """,
+      ),
+      style: TeXViewStyle(
+        backgroundColor: Colors.grey.shade50,
+        fontStyle: TeXViewFontStyle(
+            fontSize: Styles.bodyStyle.fontSize!.toInt()
+        ),
+      ),
     );
 
     // int (ax^{n}) = (a/(n+1))x^{n+1)
@@ -438,9 +510,15 @@ class _PracticePageState extends State<PracticePage> {
     _answer1 = coefficient.toDouble() / _answer2;
 
     _symbolicAnswer = TeXView(
-        child: TeXViewDocument(
-            r"""$$""" + _answer1.toString() + r"""x^{""" + _answer2.toString() + r"""} + C$$<br> """
-        )
+      child: TeXViewDocument(
+        r"""$$""" + _answer1.toString() + r"""x^{""" + _answer2.toString() + r"""} + C$$<br> """,
+      ),
+      style: TeXViewStyle(
+        backgroundColor: Colors.grey.shade50,
+        fontStyle: TeXViewFontStyle(
+            fontSize: Styles.bodyStyle.fontSize!.toInt()
+        ),
+      ),
     );
   }
 
@@ -480,7 +558,7 @@ class _PracticePageState extends State<PracticePage> {
       ),
       body: Column(
         children: [
-          Text('Practice'),
+          //Text('Practice'),
           _expression,
           _displayedSolution,
           _status,
@@ -511,9 +589,15 @@ class _PracticePageState extends State<PracticePage> {
               Flexible(
                 child: TextButton(
                   onPressed: () {Navigator.pop(context);},
-                  child: const ListTile(
-                    title: const Text('Back'),
-                    leading: Icon(Icons.navigate_before),
+                  child: ListTile(
+                    title: Text(
+                      'Back',
+                      style: Styles.bodyStyle,
+                    ),
+                    leading: Icon(
+                      Icons.navigate_before,
+                      size: (2.0 * Styles.bodyStyle.fontSize!.toInt()),
+                    ),
                   ),
                 ),
               ),
@@ -535,8 +619,8 @@ class _PracticePageState extends State<PracticePage> {
     if((widget.preferences.getOperation().compareTo('d/dx') == 0) ||
         (widget.preferences.getOperation().compareTo('int') == 0)) {
 
-      _prompt1 = Text('a = ', style: _textStyle,);
-      _prompt2 = Text('n = ', style: _textStyle,);
+      _prompt1 = Text('a = ', style: Styles.bodyStyle,);
+      _prompt2 = Text('n = ', style: Styles.bodyStyle,);
 
     } else {
       _prompt1 = Text('');
@@ -546,27 +630,39 @@ class _PracticePageState extends State<PracticePage> {
     // Initialize functionality of next options
     _checkAns = TextButton(
       onPressed: _toggleNextButton,
-      child: const ListTile(
-        title: const Text('Check'),
-        trailing: Icon(Icons.navigate_next),
+      child: ListTile(
+        title: Text(
+          'Check',
+          style: Styles.bodyStyle,
+        ),
+        trailing: Icon(
+          Icons.navigate_next,
+          size: (2.0 * Styles.bodyStyle.fontSize!.toInt()),
+        ),
       ),
     );
     _practice = TextButton(
       onPressed: _toggleNextButton,
-      child: const ListTile(
-        title: const Text('Practice'),
-        trailing: Icon(Icons.navigate_next),
+      child: ListTile(
+        title: Text(
+          'Practice',
+          style: Styles.bodyStyle,
+        ),
+        trailing: Icon(
+          Icons.navigate_next,
+          size: (2.0 * Styles.bodyStyle.fontSize!.toInt()),
+        ),
       ),
     );
 
     // Set controllers for text fields
     _userAnswer1 = TextField(
       controller: _textFieldController1,
-      style: _textStyle,
+      style: Styles.bodyStyle,
     );
     _userAnswer2 = TextField(
       controller: _textFieldController2,
-      style: _textStyle,
+      style: Styles.bodyStyle,
     );
 
     _generateExpression(widget.preferences.getOperation());

@@ -3,7 +3,9 @@ import 'package:calculation_practice/util/Preferences.dart';
 import 'package:flutter/material.dart';
 
 class RandomPage extends StatefulWidget {
-  const RandomPage({Key? key}) : super(key: key);
+  const RandomPage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
 
   @override
   _RandomPageState createState() => _RandomPageState();
@@ -41,8 +43,11 @@ class _RandomPageState extends State<RandomPage> {
   @override
   Widget build(BuildContext context) {
 
-    return Material(
-      child: Container(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
 
@@ -119,7 +124,7 @@ class _RandomPageState extends State<RandomPage> {
   @override
   void initState() {
     _checkBoxes = [
-      _buildRow(1, '+'), _buildRow(1, '-'), _buildRow(1, '\u00d7'), _buildRow(1, '\u00f7'),
+      _buildRow(1, '+'), _buildRow(1, '\u2212'), _buildRow(1, '\u00d7'), _buildRow(1, '\u00f7'),
       _buildRow(1, '\u221a'), _buildRow(1, '^'), _buildRow(1, 'trig'), _buildRow(1, 'log'),
       _buildRow(1, '\u2211'), _buildRow(1, '!'), _buildRow(1, 'd/dx'), _buildRow(1, '\u222b'),
     ];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:calculation_practice/styles/Styles.dart';
 
 class TemplatePage extends StatefulWidget {
   TemplatePage({Key? key, required this.title}) : super(key: key);
@@ -11,11 +12,6 @@ class TemplatePage extends StatefulWidget {
 
 class _TemplatePageState extends State<TemplatePage> {
 
-  TextStyle _textStyle = TextStyle(
-    fontSize: 20,
-    color: Colors.green,
-  );
-
   Widget _buildButton(String operation) {
 
     Widget buttonIcon = Text('');
@@ -25,7 +21,7 @@ class _TemplatePageState extends State<TemplatePage> {
         path = '/add';
         break;
 
-      case '-':
+      case '\u2212':
         path = '/sub';
         break;
 
@@ -45,7 +41,7 @@ class _TemplatePageState extends State<TemplatePage> {
         path = '/pow';
         break;
 
-      case 'sin...':
+      case 'trig':
         path = '/trig';
         break;
 
@@ -82,18 +78,24 @@ class _TemplatePageState extends State<TemplatePage> {
     if(operation.compareTo('random') != 0) {
       buttonIcon = Text(
         operation,
-        style: _textStyle,
+        style: Styles.templateButtonStyle,
       );
     }
 
     return Container(
       height: (MediaQuery.of(context).size.width) * 0.1,
       width: (MediaQuery.of(context).size.height) * 0.1,
-      child: OutlinedButton(
+
+      child: ElevatedButton(
         child: buttonIcon,
         onPressed: () {
           Navigator.of(context).pushNamed(path);
         },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(
+            Colors.brown.shade300,
+          ),
+        ),
       ),
     );
   }
@@ -112,13 +114,14 @@ class _TemplatePageState extends State<TemplatePage> {
             children: [
               Expanded(
                 flex: 1,
-                child: OutlinedButton(
+                child: /*OutlinedButton(
                   child: Text('Custom', style: TextStyle(
                     fontSize: 20,
                     color: Colors.grey,
                   ),),
                   onPressed: null,
-                ),
+                ),*/
+                Text(''),
               ),
             ],
           ),
@@ -131,7 +134,7 @@ class _TemplatePageState extends State<TemplatePage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildButton('+'),
-              _buildButton('-'),
+              _buildButton('\u2212'),
               _buildButton('\u00d7'),
               _buildButton('\u00f7'),
             ],
@@ -172,7 +175,7 @@ class _TemplatePageState extends State<TemplatePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildButton('random'),
+              //_buildButton('random'),
             ],
           ),
         ),

@@ -14,8 +14,11 @@ import 'package:calculation_practice/template_screens/fac.dart';
 import 'package:calculation_practice/template_screens/derivs.dart';
 import 'package:calculation_practice/template_screens/int.dart';
 import 'package:calculation_practice/template_screens/random.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
+import 'package:math_expressions/math_expressions.dart';
+import 'package:math_keyboard/math_keyboard.dart';
 
 /*
 Raised Button = Elevated Button
@@ -39,7 +42,7 @@ class CalculatorPractice extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: 'Calculator'),
+      home: MyHomePage(title: 'Templates'),// TODO
       routes: <String, WidgetBuilder>{
         '/add': (BuildContext context) => new AddPage(title: 'Add'),
         '/sub': (BuildContext context) => new SubPage(title: 'Sub'),
@@ -53,7 +56,7 @@ class CalculatorPractice extends StatelessWidget {
         '/fac': (BuildContext context) => new FacPage(title: 'Fac'),
         '/deriv': (BuildContext context) => new DerivPage(title: 'Deriv'),
         '/int': (BuildContext context) => new IntPage(title: 'Int'),
-        '/random': (BuildContext context) => new RandomPage(/*title: 'Random'*/)
+        '/random': (BuildContext context) => new RandomPage(title: 'Random')
       },
     );
   }
@@ -70,8 +73,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  Parser _parser = Parser();
+  TextField _textField = TextField();
+  Widget _expression = Text('');
+  TextEditingController _controller = TextEditingController();
   int _selectedIndex = 0; // used for indexed stack
-  String _appBarTitle = 'Calculator';
+  String _appBarTitle = 'Templates';// TODO
 
   /// Switches between the Calculator, Templates, and Settings screens.
   /// * index: The screen being switched to.
@@ -96,6 +103,21 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  String _buildSoundExpression(String expression) {
+    String replacement = '';
+    for(int i = 0; i < expression.length; i++) {
+      if(expression[i] == '!' ||
+        expression[i] == 'i') {
+        replacement += '*' + expression[i];
+      } else if(expression[i] == '\u2211') {
+        replacement += 'sum';
+      } else {
+        replacement += expression[i];
+      }
+    }
+    return replacement;
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -104,20 +126,62 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(_appBarTitle),
       ),
       body:
+      /*
+      Column(
+        children: [
+          MathField(
+            keyboardType: MathKeyboardType.expression,
+            variables: const ['x', 'y', 'z'],
+            decoration: InputDecoration(),
+            onChanged: (String value) {
+              print(value);
+            },
+            onSubmitted: (String value) {},
+            autofocus: true,
+          ),
+          _textField,
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                try {
+                  String expr = _buildSoundExpression(_controller.text);
+                  Expression e = _parser.parse(expr);
+                  String parsed = e.toString();
+                  if(parsed.isNotEmpty) {
+                    ContextModel ctxtmd = ContextModel();
+                    Variable i = Variable('i');
+                    ctxtmd.bindVariable(i, e);
+                    print(ctxtmd.functions.toString());
+                    _expression = Text(e.evaluate(EvaluationType.REAL, ctxtmd));//TeXView(child: TeXViewDocument(r"""$$""" + parsed + r"""$$<br>"""),);
+                  } else {
+                    _expression = Text('empty');
+                  }
+                } on FormatException {
+                  _expression = Text('Format Exception Occurred');
+                }
+              });
+            },
+            child: Text(':D'),
+          ),
+          _expression,
+
+        ],
+      ),*/
+      //SettingsPage(title: 'Settings'),
       ///*
       SafeArea(
         top: false,
         child: IndexedStack(
-          index: _selectedIndex,
+          index: 0,
           alignment: Alignment(0.0, 0.0),
           children: <Widget>[
-            CalculatorPage(title: 'Calculator'),
+            //CalculatorPage(title: 'Calculator'),
             TemplatePage(title: 'Templates'),
             SettingsPage(title: 'Settings'),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      /*bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.calculate),
@@ -137,12 +201,27 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: (int index) {
           _onItemTapped(index);
         },
-      ),//*/
+      ),*/
     );
+  }
+
+  double _sum(int i, int n, Expression expr) {
+    double result = 0;
+    ContextModel cm = ContextModel();
+    Variable x = Variable('i');
+    for(int counter = i; i <= n; i++) {
+      cm.bindVariable(x, Number(i));
+      result += expr.evaluate(EvaluationType.REAL, cm);
+    }
+    return result;
   }
 
   @override
   void initState() {
+    _parser.addFunction('sum', _sum);
+    _textField = TextField(
+      controller: _controller,
+    );
     _appBarTitle = widget.title;
     super.initState();
   }

@@ -1,6 +1,7 @@
 import 'package:calculation_practice/util/BackspaceKey.dart';
 import 'package:flutter/material.dart';
 import 'package:calculation_practice/util/CustomKeyboard.dart';
+import 'package:calculation_practice/styles/Styles.dart';
 
 /// Parts of this class were adapted from the following article:
 /// https://medium.com/flutter-community/custom-in-app-keboard-in-flutter-b925d56c8465
@@ -14,70 +15,85 @@ class CalculatorPage extends StatefulWidget {
 }
 
 class _CalculatorPageState extends State<CalculatorPage> {
+  /* math_expressions format
+     + = +
+     - = -
+     * = *
+     / = /
+     ( = (
+     ) = )
+     sin = sin
+     cos = cos
+     tan = tan
+     ^ = ^
+     root = nrt(nth, num) or sqrt(num)
+     log = log(base, num) or ln(num)
+     Missing: !, sum, d/dx, int
+  */
+
   String _constant = 'pi';
   String _variable = 'x';
   TextEditingController _controller = TextEditingController();
-  TextStyle _textStyle = TextStyle(
-    fontSize: 24,
-    color: Colors.grey,
-  );
 
   void _onBackspace() {
-    final text = _controller.text;
-    final textSelection = _controller.selection;
-    final selectionLength = textSelection.end - textSelection.start;
+    String text = _controller.text;
+    TextSelection selectedText = _controller.selection;
+    int selectionLength = selectedText.end - selectedText.start;
 
     // There is a selection.
     if(selectionLength > 0) {
-      final newText = text.replaceRange(
-        textSelection.start,
-        textSelection.end,
+      // Delete the selection
+      String newText = text.replaceRange(
+        selectedText.start,
+        selectedText.end,
         '',
       );
-      _controller.text = newText;
-      _controller.selection = textSelection.copyWith(
-        baseOffset: textSelection.start,
-        extentOffset: textSelection.start
+      _controller.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(
+          offset: selectedText.baseOffset - selectionLength,
+        ),
       );
-      return;
-    }
 
-    // The cursor is at the beginning.
-    if(textSelection.start == 0) {
-      return;
+    // The cursor is not at the beginning.
+    } else if(selectedText.baseOffset > 0) {
+      // Delete the previous character
+      int newStart = selectedText.start - 1;
+      int newEnd = selectedText.start;
+      String newText = text.replaceRange(
+        newStart,
+        newEnd,
+        '',
+      );
+      _controller.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(
+          offset: selectedText.baseOffset - 1,
+        ),
+      );
     }
-
-    // Delete the previous character
-    //final previousCodeUnit = text.codeUnitAt(textSelection.start - 1);
-    final offset = 1;
-    final newStart = textSelection.start - offset;
-    final newEnd = textSelection.start;
-    final newText = text.replaceRange(
-      newStart,
-      newEnd,
-      '',
-    );
-    _controller.text = newText;
-    _controller.selection = textSelection.copyWith(
-      baseOffset: newStart,
-      extentOffset: newStart,
-    );
   }
 
   void _onTextInput(String input) {
-    final text = _controller.text;
-    final textSelection = _controller.selection;
-    final newText = text.replaceRange(
-      textSelection.start,
-      textSelection.end,
-      input,
-    );
-    final inputLength = input.length;
-    _controller.text = newText;
-    _controller.selection = textSelection.copyWith(
-      baseOffset: textSelection.start + inputLength,
-      extentOffset: textSelection.start + inputLength,
-    );
+    String text = _controller.text;
+    TextSelection selectedText = _controller.selection;
+
+    if(selectedText.baseOffset < 0) {
+      _controller.text += input;
+    } else {
+      String newText = text.replaceRange(
+        selectedText.start,
+        selectedText.end,
+        input,
+      );
+
+      _controller.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(
+          offset: selectedText.baseOffset + input.length,
+        ),
+      );
+    }
   }
 
   @override
@@ -94,50 +110,52 @@ class _CalculatorPageState extends State<CalculatorPage> {
           // Expression preview and save button
           Expanded(
             flex: 1,
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 7,
-                  child: TextField(
-                    controller: _controller,
-                    showCursor: true,
-                    readOnly: true,
-                    style: _textStyle,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 7,
+                    child: TextField(
+                      controller: _controller,
+                      showCursor: true,
+                      readOnly: true,
+                      style: Styles.bodyStyle,
+                    ),
                   ),
-                ),
-                BackspaceKey(
-                  flex: 1,
-                  onBackspace: _onBackspace,
-                ),
-              ],
+                  BackspaceKey(
+                    flex: 1,
+                    onBackspace: _onBackspace,
+                  ),
+                ],
+              ),
             ),
           ),
 
           // Empty space between keyboard and text field
-          Expanded(
-            child: Text(''),
-            flex: 1,
+          SizedBox(
+            height: 20,
           ),
 
           // Main buttons
           Expanded(
-            flex: 6,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+            flex: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
 
-                // Operation buttons
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  // Operation buttons
+                  Expanded(
+                    flex: 1,
                     child: CustomKeyboard(
                       onTextInput: (input) {
                         _onTextInput(input);
                       },
                       buttons: [
-                        ['+', '-', '\u00d7', '\u00f7'],
+                        ['+', '\u2212', '\u00d7', '\u00f7'],
                         ['\u221a', '^', '!'],
                         ['sin', 'cos', 'tan'],
                         ['log', 'ln', '\u2211'],
@@ -145,13 +163,14 @@ class _CalculatorPageState extends State<CalculatorPage> {
                       ],
                     ),
                   ),
-                ),
 
-                // Number buttons
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  SizedBox(
+                    width: 12.0,
+                  ),
+
+                  // Number buttons
+                  Expanded(
+                    flex: 1,
                     child: CustomKeyboard(
                       onTextInput: (input) {
                         _onTextInput(input);
@@ -165,15 +184,14 @@ class _CalculatorPageState extends State<CalculatorPage> {
                       ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
           // Empty space between main buttons and bottom buttons
-          Expanded(
-            child: Text(''),
-            flex: 1,
+          SizedBox(
+            height: 20,
           ),
 
           // Left, right, backspace, and equal buttons
@@ -197,7 +215,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                 OutlinedButton(
                   child: Text(
                     '=',
-                    style: _textStyle,
+                    style: Styles.operatorStyle,
                   ),
                   onPressed: null,
                 ),

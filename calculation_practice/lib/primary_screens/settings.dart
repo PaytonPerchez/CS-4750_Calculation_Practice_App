@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:calculation_practice/styles/Styles.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage({Key? key, required this.title}) : super(key: key);
@@ -64,46 +65,35 @@ class _SettingsPageState extends State<SettingsPage> {
 
           // Text size
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Column(
               children: [
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    'Text Size',
-                    style: _textStyle,
-                  ),
+                Text(
+                  'Text Size',
+                  style: Styles.headerStyles,
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    'Aa',
-                    style: _textStyle,
-                  ),
+                Text(
+                  'Aa',
+                  style: Styles.bodyStyle,
                 ),
               ],
             ),
           ),
 
-          Expanded(flex: 2, child: Text('')),
+          Expanded(flex: 1, child: Text('')),
 
           // About
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Column(
               children: [
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    'About',
-                    style: _textStyle,
-                  ),
+                Text(
+                  'About',
+                  style: Styles.headerStyles,
                 ),
-                Expanded(
-                  child: Text(
-                    'This is the settings page',
-                    style: _textStyle,
-                  ),
+                Text(
+                  'This is the settings page',
+                  style: Styles.bodyStyle,
                 ),
               ],
             ),

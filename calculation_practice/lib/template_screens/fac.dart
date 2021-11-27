@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:calculation_practice/misc_screens/general_template_screen.dart';
 import 'package:calculation_practice/util/Preferences.dart';
+import 'package:calculation_practice/styles/Styles.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 
 class FacPage extends StatefulWidget {
@@ -20,10 +21,7 @@ class _FacPageState extends State<FacPage> {
         title: Text(widget.title),
       ),
       body: DefaultTextStyle(
-        style: TextStyle(
-            fontSize: 20,
-            color: Colors.black
-        ),
+        style: Styles.bodyStyle,
         child: GeneralScreen(
           operation: Text('!'),
           preview: Text('a!'),

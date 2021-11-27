@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:calculation_practice/misc_screens/general_template_screen.dart';
 import 'package:calculation_practice/util/Preferences.dart';
+import 'package:calculation_practice/styles/Styles.dart';
 //import 'package:flutter_tex/flutter_tex.dart';
 
 class RootPage extends StatefulWidget {
@@ -21,10 +22,7 @@ class _RootPageState extends State<RootPage> {
         title: Text(widget.title),
       ),
       body: DefaultTextStyle(
-        style: TextStyle(
-            fontSize: 24,
-            color: Colors.black
-        ),
+        style: Styles.bodyStyle,
         child: GeneralScreen(
             operation: Text('\u221a'),
             /*TeXView(

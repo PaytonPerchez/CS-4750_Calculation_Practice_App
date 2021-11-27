@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:calculation_practice/util/Preferences.dart';
 import 'package:calculation_practice/primary_screens/practice.dart';
+import 'package:calculation_practice/styles/Styles.dart';
 
 //import 'package:flutter_tex/flutter_tex.dart';
 /*_termsTxtFieldController.text = '$_n';
 _termsTxtFieldController.selection = TextSelection.fromPosition(
   TextPosition(offset: _termsTxtFieldController.text.length)
 );*/
-enum operations { operation1, operation2 }
+enum operations { sin, cos, tan }
 
-operations? _selectedOperation = operations.operation1;
+operations? _selectedOperation = operations.sin;
 
 class GeneralScreen extends StatefulWidget {
   const GeneralScreen(
@@ -33,10 +34,6 @@ class GeneralScreen extends StatefulWidget {
 class _GeneralScreenState extends State<GeneralScreen> {
   String _trigFunction = 'sin';
   Widget _preview = Text(''); // displays the format for a practice problem
-  TextStyle _textStyle = TextStyle(
-    fontSize: 20,
-    color: Colors.black,
-  );
 
   TextEditingController _minNController = new TextEditingController();
   TextEditingController _maxNController = new TextEditingController();
@@ -46,18 +43,32 @@ class _GeneralScreenState extends State<GeneralScreen> {
   // TODO methods start here
   /// Sets the current trigonometric function to the specified value.
   /// * newValue: The specified value.
-  void _setTrigFunction(String? newValue) {
+  void _setTrigFunction(operations? newValue) {
     setState(() {
-      _trigFunction = newValue!;
+
+      switch(newValue!) {
+        case operations.sin:
+          _selectedOperation = operations.sin;
+          _trigFunction = 'sin';
+          break;
+
+        case operations.cos:
+          _selectedOperation = operations.cos;
+          _trigFunction = 'cos';
+          break;
+
+        case operations.tan:
+          _selectedOperation = operations.tan;
+          _trigFunction = 'tan';
+          break;
+      }
+
       widget.values.setOperation(_trigFunction);
 
-      // Don't change the preview if a trig operation is not selected
-      if (_selectedOperation == operations.operation1) {
-        _preview = Text(
-          '$_trigFunction\u207f(a)',
-          style: _textStyle,
-        );
-      }
+      _preview = Text(
+        '$_trigFunction\u207f(a)',
+        style: Styles.bodyStyle,
+      );
       //_preview = TeXView(child: TeXViewDocument(r"""$$\""" + _trigFunction + r"""^{n}a$$<br> """,));
     });
   }
@@ -75,78 +86,84 @@ class _GeneralScreenState extends State<GeneralScreen> {
     }
   }
 
-  /// TODO write later
+  /// Returns the controls for setting the range of n
   Widget _getRangeOfN() {
-    if(widget.values.getOperation().compareTo('!') != 0) {
-      return Row(
-        children: [
-          // Minimum of n
-          Flexible(
-            child: TextField(
-              style: _textStyle,
-              controller: _minNController,
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-              ],
-              // TODO consider checking for submission
-              onSubmitted: (String s) {
-                setState(() {
-                  try {
-                    // Do not change the text if unsuccessful
-                    if (!widget.values.setMinN(int.parse(s))) {
-                      _minNController.text =
-                          widget.values.getMinN().toString();
-                    }
-                  } on FormatException {
+    return Row(
+      children: [
+        // Minimum of n
+        Expanded(
+          flex: 1,
+          child: TextField(
+            style: Styles.bodyStyle,
+            controller: _minNController,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+            ],
+            // TODO consider checking for submission
+            onSubmitted: (String s) {
+              setState(() {
+                try {
+                  // Do not change the text if unsuccessful
+                  if (!widget.values.setMinN(int.parse(s))) {
                     _minNController.text =
                         widget.values.getMinN().toString();
                   }
-                });
-              },
-            ),
+                } on FormatException {
+                  _minNController.text =
+                      widget.values.getMinN().toString();
+                }
+              });
+            },
           ),
-          Container(
-            height: 50,
-            width: 100,
+        ),
+        Expanded(
+          flex: 1,
+          //height: 50,
+          //width: 100,
+          child: Center(
             child: Text(
               '\u2264 n \u2264',
-              style: _textStyle,
+              style: Styles.bodyStyle,
             ),
-            /*TeXView(
+          ),
+          /*TeXView(
                         child: TeXViewDocument(
                             r"""$$\leq n \leq$$<br> """,
                         ),
                       ),*/
-          ),
-          // Maximum of n
-          Flexible(
-            child: TextField(
-              style: _textStyle,
-              controller: _maxNController,
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-              ],
-              // TODO consider checking for submission
-              onSubmitted: (String s) {
-                setState(() {
-                  try {
-                    // Do not change the text if unsuccessful
-                    if (!widget.values.setMaxN(int.parse(s))) {
-                      _maxNController.text =
-                          widget.values.getMaxN().toString();
-                    }
-                  } on FormatException {
+        ),
+        // Maximum of n
+        Expanded(
+          flex: 1,
+          child: TextField(
+            style: Styles.bodyStyle,
+            controller: _maxNController,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+            ],
+            // TODO consider checking for submission
+            onSubmitted: (String s) {
+              setState(() {
+                try {
+                  // Do not change the text if unsuccessful
+                  if (!widget.values.setMaxN(int.parse(s))) {
                     _maxNController.text =
                         widget.values.getMaxN().toString();
                   }
-                });
-              },
-            ),
+                } on FormatException {
+                  _maxNController.text =
+                      widget.values.getMaxN().toString();
+                }
+              });
+            },
           ),
-          // Randomize the range of n
-          ElevatedButton(
+        ),
+        // Randomize the range of n
+        Expanded(
+          flex: 1,
+          child: ElevatedButton(
             onPressed: () {
               widget.values.randomizeRangeOfN();
               setState(() {
@@ -158,211 +175,293 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
             child: Icon(Icons.casino),
           ),
-        ],
-      );
-    } else {
-      return Text('');
-    }
+        ),
+      ],
+    );
+  }
+
+
+  Widget _genTrigOptions() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: RadioListTile<operations>(
+            title: Text(
+              'sin',
+              style: Styles.bodyStyle,
+            ),
+            value: operations.sin,
+            groupValue: _selectedOperation,
+            onChanged: _setTrigFunction,
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: RadioListTile<operations>(
+            title: Text(
+              'cos',
+              style: Styles.bodyStyle,
+            ),
+            value: operations.cos,
+            groupValue: _selectedOperation,
+            onChanged: _setTrigFunction,
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: RadioListTile<operations>(
+            title: Text(
+              'tan',
+              style: Styles.bodyStyle,
+            ),
+            value: operations.tan,
+            groupValue: _selectedOperation,
+            onChanged: _setTrigFunction,
+          ),
+        ),
+      ],
+    );
   }
 
   // TODO UI starts here
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          // Operation
-          if (_isTrigFunction())
-            Container(
-              height: 100,
-              width: 100,
-              child: Row(
-                children: <Widget>[
-                  Flexible(
-                    child: DropdownButton<String>(
-                      value: _trigFunction,
-                      iconSize: 24,
-                      elevation: 16,
-                      onChanged: (String? newValue) {
-                        _setTrigFunction(newValue);
-                      },
-                      items: <String>['sin', 'cos', 'tan']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                  )
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: MediaQuery.of(context).size.height * 0.8,
+        alignment: Alignment(0.0, 0.0),
+
+        child: Column(
+          //crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            // Operation
+            if (_isTrigFunction())
+              Expanded(
+                flex: 1,
+                child: _genTrigOptions(),
+              ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                //mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Preview
+                  Expanded(
+                    flex: 1,
+                    child: _preview,
+                  ),
+                  // Attribute information
+                  Expanded(
+                    flex: 1,
+                    child: widget.attribute,
+                  ),
                 ],
               ),
             ),
-          // Preview
-          Flexible(
-            child: _preview,
-          ),
-          // Attribute information
-          widget.attribute,
-          const Divider(
-            height: 20,
-            thickness: 5,
-            indent: 20,
-            endIndent: 20,
-          ),
-          // Range Options
-          Container(
-            child: Column(
-              children: [
-                // Range of n
-                _getRangeOfN(),
-                // Range of a
-                Row(
-                  children: [
-                    // Minimum of a
-                    Flexible(
-                      child: TextField(
-                        style: _textStyle,
-                        controller: _minAController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                        ],
-                        // TODO consider checking for submission
-                        onSubmitted: (String s) {
-                          setState(() {
-                            try {
-                              // Do not change the text if unsuccessful
-                              if (!widget.values.setMinA(int.parse(s))) {
+            const Divider(
+              height: 20,
+              thickness: 2,
+              indent: 20,
+              endIndent: 20,
+            ),
+            // Range Options
+            Expanded(
+              flex: 1,
+              child: Column(
+                children: [
+                  // Range of n
+                  if(widget.values.getOperation().compareTo('!') != 0)
+                    Expanded(
+                      flex: 1,
+                      child: _getRangeOfN(),
+                    ),
+                  // Range of a
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        // Minimum of a
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            style: Styles.bodyStyle,
+                            controller: _minAController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+                            ],
+                            // TODO consider checking for submission
+                            onSubmitted: (String s) {
+                              setState(() {
+                                try {
+                                  // Do not change the text if unsuccessful
+                                  if (!widget.values.setMinA(int.parse(s))) {
+                                    _minAController.text =
+                                        widget.values.getMinA().toString();
+                                  }
+                                } on FormatException {
+                                  _minAController.text =
+                                      widget.values.getMinA().toString();
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          //height: 50,
+                          //width: 100,
+                          child: Center(
+                            child: Text(
+                              '\u2264 a \u2264',
+                              style: Styles.bodyStyle,
+                            ),
+                          ),
+                          /*TeXView(
+                            child: TeXViewDocument(
+                                r"""$$\leq a \leq$$<br> """,
+                            ),
+                          ),*/
+                        ),
+                        // Maximum of a
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            style: Styles.bodyStyle,
+                            controller: _maxAController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+                            ],
+                            // TODO consider checking for submission
+                            onSubmitted: (String s) {
+                              setState(() {
+                                try {
+                                  // Do not change the text if unsuccessful
+                                  if (!widget.values.setMaxA(int.parse(s))) {
+                                    _maxAController.text =
+                                        widget.values.getMaxA().toString();
+                                  }
+                                } on FormatException {
+                                  _maxAController.text =
+                                      widget.values.getMaxA().toString();
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                        // Randomize the range of a
+                        Expanded(
+                          flex: 1,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              widget.values.randomizeRangeOfA();
+                              setState(() {
                                 _minAController.text =
                                     widget.values.getMinA().toString();
-                              }
-                            } on FormatException {
-                              _minAController.text =
-                                  widget.values.getMinA().toString();
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                    Container(
-                      height: 50,
-                      width: 100,
-                      child: Text(
-                        '\u2264 a \u2264',
-                        style: _textStyle,
-                      ),
-                      /*TeXView(
-                        child: TeXViewDocument(
-                            r"""$$\leq a \leq$$<br> """,
-                        ),
-                      ),*/
-                    ),
-                    // Maximum of a
-                    Flexible(
-                      child: TextField(
-                        style: _textStyle,
-                        controller: _maxAController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                        ],
-                        // TODO consider checking for submission
-                        onSubmitted: (String s) {
-                          setState(() {
-                            try {
-                              // Do not change the text if unsuccessful
-                              if (!widget.values.setMaxA(int.parse(s))) {
                                 _maxAController.text =
                                     widget.values.getMaxA().toString();
-                              }
-                            } on FormatException {
-                              _maxAController.text =
-                                  widget.values.getMaxA().toString();
-                            }
-                          });
-                        },
-                      ),
+                              });
+                            },
+                            child: Icon(Icons.casino),
+                          ),
+                        ),
+                      ],
                     ),
-                    // Randomize the range of a
-                    ElevatedButton(
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    height: MediaQuery.of(context).size.height * 0.05,
+                  ),
+                  // Randomize All
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
                       onPressed: () {
+                        widget.values.randomizeRangeOfN();
                         widget.values.randomizeRangeOfA();
                         setState(() {
-                          _minAController.text =
-                              widget.values.getMinA().toString();
-                          _maxAController.text =
-                              widget.values.getMaxA().toString();
+                          _minNController.text = widget.values.getMinN().toString();
+                          _maxNController.text = widget.values.getMaxN().toString();
+                          _minAController.text = widget.values.getMinA().toString();
+                          _maxAController.text = widget.values.getMaxA().toString();
                         });
                       },
-                      child: Icon(Icons.casino),
-                    ),
-                  ],
-                ),
-                // Randomize All
-                ElevatedButton(
-                  onPressed: () {
-                    widget.values.randomizeRangeOfN();
-                    widget.values.randomizeRangeOfA();
-                    setState(() {
-                      _minNController.text = widget.values.getMinN().toString();
-                      _maxNController.text = widget.values.getMaxN().toString();
-                      _minAController.text = widget.values.getMinA().toString();
-                      _maxAController.text = widget.values.getMaxA().toString();
-                    });
-                  },
-                  child: const Text(
-                    'Randomize All',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
+                      child: const Text(
+                        'Randomize All',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          // Navigation Buttons
-          Row(
-            children: [
-              // Back Button
-              Flexible(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const ListTile(
-                    title: const Text('Back'),
-                    leading: Icon(Icons.navigate_before),
+            // Navigation Buttons
+            Expanded(
+              flex: 1,
+              child: Row(
+                children: [
+                  // Back Button
+                  Expanded(
+                    flex: 1,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: ListTile(
+                        title: Text(
+                          'Back',
+                          style: Styles.bodyStyle,
+                        ),
+                        leading: Icon(
+                          Icons.navigate_before,
+                          size: (2.0 * Styles.bodyStyle.fontSize!.toInt()),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              // Practice Button
-              Flexible(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) => new PracticePage(
-                                title: 'Practice', preferences: widget.values)));
-                  },
-                  child: const ListTile(
-                    title: const Text('Practice'),
-                    trailing: Icon(Icons.navigate_next),
+                  // Practice Button
+                  Expanded(
+                    flex: 1,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (BuildContext context) => new PracticePage(
+                                    title: 'Practice', preferences: widget.values)));
+                      },
+                      child: ListTile(
+                        title: Text(
+                          'Practice',
+                          style: Styles.bodyStyle,
+                        ),
+                        trailing: Icon(
+                          Icons.navigate_next,
+                          size: (2.0 * Styles.bodyStyle.fontSize!.toInt()),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   @override
   void initState() {
-    _selectedOperation = operations.operation1;
+    _selectedOperation = operations.sin;
 
     _minNController.text = widget.values.getMinN().toString();
     _maxNController.text = widget.values.getMaxN().toString();

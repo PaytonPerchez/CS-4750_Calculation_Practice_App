@@ -16,14 +16,17 @@ class BackspaceKey extends StatelessWidget {
     return Expanded(
         flex: flex,
         child: Padding(
-          padding: const EdgeInsets.all(1.0),
+          padding: const EdgeInsets.all(2.0),
           child: Material(
-            color: Colors.grey.shade200,
+            color: Colors.green.shade200,//Colors.grey.shade200,
             child: InkWell(
               onTap: () {
                 onBackspace.call();
               },
               child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey)
+                ),
                 child: Center(
                   child: Icon(Icons.backspace),
                 ),
